@@ -1,5 +1,9 @@
 // Error handling utilities for the StellarEarn application
 
+import { mapApiError, type ApiDomain } from '@/lib/api/api-error-mapper';
+
+export type { ApiDomain };
+
 export interface AppError extends Error {
   code?: string;
   statusCode?: number;
@@ -128,9 +132,18 @@ export function categorizeError(error: AppError | Error): ErrorCategory {
 }
 
 // Get user-friendly error messages
-export function getFriendlyErrorMessage(error: AppError | Error): string {
-  const category = categorizeError(error);
+export function getFriendlyErrorMessage(
+  error: AppError | Error,
+  domain?: ApiDomain | string
+): string {
   const appError = error as AppError;
+
+  // If we have a status code and a domain, delegate to the domain mapper
+  if (appError.statusCode && appError.statusCode > 0) {
+    return mapApiError(appError.statusCode, domain);
+  }
+
+  const category = categorizeError(error);
 
   switch (category) {
     case ERROR_CATEGORIES.NETWORK:

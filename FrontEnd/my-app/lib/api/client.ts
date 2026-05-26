@@ -20,6 +20,7 @@ import {
   ERROR_CODES,
   type AppError,
 } from '@/lib/utils/error-handler';
+import { mapApiError, inferDomainFromUrl } from '@/lib/api/api-error-mapper';
 import type { ApiErrorResponse, AuthTokens } from '@/lib/types/api.types';
 import { env } from '@/lib/config/env';
 
@@ -126,11 +127,6 @@ function transformAxiosError(error: unknown): AppError {
   }
 
   const status = error.response?.status;
-  const data = hasApiErrorResponse(error) ? error.response.data : undefined;
-
-  const message = Array.isArray(data?.message)
-    ? data.message.join('; ')
-    : (data?.message ?? error.message);
 
   if (!status) {
     // Network / timeout error
@@ -143,31 +139,23 @@ function transformAxiosError(error: unknown): AppError {
     );
   }
 
-  switch (status) {
-    case 400:
-      return createAppError(message, ERROR_CODES.VALIDATION_ERROR, 400);
-    case 401:
-      return createAppError(message, ERROR_CODES.UNAUTHORIZED, 401);
-    case 403:
-      return createAppError(message, ERROR_CODES.FORBIDDEN, 403);
-    case 404:
-      return createAppError(message, ERROR_CODES.NOT_FOUND, 404);
-    case 429:
-      return createAppError(
-        'Too many requests. Please slow down.',
-        ERROR_CODES.SERVER_ERROR,
-        429
-      );
-    default:
-      if (status >= 500) {
-        return createAppError(
-          message || 'Something went wrong on our end.',
-          ERROR_CODES.SERVER_ERROR,
-          status
-        );
-      }
-      return createAppError(message, ERROR_CODES.SERVER_ERROR, status);
-  }
+  // Infer domain from the request URL for a contextual message
+  const url = error.config?.url ?? '';
+  const domain = inferDomainFromUrl(url);
+  const userMessage = mapApiError(status, domain);
+
+  const errorCode =
+    status === 400
+      ? ERROR_CODES.VALIDATION_ERROR
+      : status === 401
+        ? ERROR_CODES.UNAUTHORIZED
+        : status === 403
+          ? ERROR_CODES.FORBIDDEN
+          : status === 404
+            ? ERROR_CODES.NOT_FOUND
+            : ERROR_CODES.SERVER_ERROR;
+
+  return createAppError(userMessage, errorCode, status);
 }
 
 // ---------------------------------------------------------------------------
