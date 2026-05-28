@@ -71,6 +71,46 @@ make snapshots-stats
 
 See [SNAPSHOT_MANAGEMENT.md](./SNAPSHOT_MANAGEMENT.md) for complete documentation.
 
+### Local Deterministic Environment
+
+For full end-to-end integration testing against a real local Stellar standalone network with fixed, reproducible keypairs and contract IDs:
+
+**Prerequisites:** Docker, Rust (`wasm32-unknown-unknown` target), and Stellar CLI.
+
+```bash
+# 1. Start local network, deploy contracts, write .env.local
+make local-env-setup
+
+# 2. Run end-to-end lifecycle integration tests
+make local-env-test
+
+# 3. Tear everything down when done
+make local-env-clean
+```
+
+**Variants:**
+```bash
+# Skip Docker if you already have a local node running
+make local-env-setup SKIP_DOCKER=1
+
+# Run abbreviated test suite (skips escrow, XP, pause checks)
+make local-env-test QUICK=1
+
+# Print full CLI output for every test step
+make local-env-test VERBOSE=1
+
+# Print the deterministic keypairs without starting anything
+./setup-local-env.sh --keys-only
+```
+
+**What the scripts do:**
+- `setup-local-env.sh` — Pulls and starts the `stellar/quickstart` Docker image in standalone mode, creates 5 **fixed deterministic keypairs** (Admin, Creator, Verifier, Contributor, Oracle), funds them via local friendbot, builds and deploys the `earn_quest` WASM, initialises the contract, and writes all IDs and keys to `.env.local` in the project root.
+- `verify-local-env.sh` — Loads `.env.local` and exercises a full quest lifecycle on the live local network: quest registration → proof submission → verifier approval → reward claim → XP verification → pause/resume.
+
+> ⚠️ The deterministic secrets in `setup-local-env.sh` are **local development only**. They are never used on testnet or mainnet.
+
+See [SNAPSHOT_MANAGEMENT.md](./SNAPSHOT_MANAGEMENT.md) for test snapshot management.
+
 ### Operations
 
 - [SLA / SLO Definitions](./SLA_SLO.md)

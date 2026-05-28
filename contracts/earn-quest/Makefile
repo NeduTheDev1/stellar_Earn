@@ -1,4 +1,4 @@
-.PHONY: help test test-verbose build license-check deny-check migration-dry-run migration-apply snapshots snapshots-clean snapshots-verify snapshots-restore snapshots-backup
+.PHONY: help test test-verbose build license-check deny-check migration-dry-run migration-apply snapshots snapshots-clean snapshots-verify snapshots-restore snapshots-backup local-env-setup local-env-test local-env-clean
 
 # Default target
 help:
@@ -13,6 +13,14 @@ help:
 	@echo "  make deny-check         - Run cargo-deny advisory and license checks"
 	@echo "  make migration-dry-run  - Preview schema migration for STATE=<path>"
 	@echo "  make migration-apply    - Write migrated schema to OUTPUT=<path>"
+	@echo ""
+	@echo "Local Deterministic Environment:"
+	@echo "  make local-env-setup    - Start sandbox, deploy contracts, write .env.local"
+	@echo "  make local-env-test     - Run end-to-end integration tests against local sandbox"
+	@echo "  make local-env-clean    - Stop sandbox Docker container and remove .env.local"
+	@echo "  make local-env-setup SKIP_DOCKER=1  - Skip Docker (assume node already running)"
+	@echo "  make local-env-test  QUICK=1        - Run abbreviated test suite"
+	@echo "  make local-env-test  VERBOSE=1      - Show full CLI output for each step"
 	@echo ""
 	@echo "Snapshot Management:"
 	@echo "  make snapshots          - Update all snapshots (with backup)"
@@ -136,3 +144,31 @@ clean-all: clean
 	@echo "Cleaning snapshots and backups..."
 	@rm -rf test_snapshots_backup_*
 	@echo "Done!"
+
+# ── Deterministic Local Environment ──────────────────────────────────────────
+
+# Start the local Stellar standalone network, deploy contracts,
+# and write deterministic keypairs + IDs to .env.local
+local-env-setup:
+	@echo "Setting up deterministic local environment..."
+	@chmod +x ./setup-local-env.sh
+	@if [ "$(SKIP_DOCKER)" = "1" ]; then \
+		./setup-local-env.sh --skip-docker; \
+	else \
+		./setup-local-env.sh; \
+	fi
+
+# Run end-to-end integration tests against the local sandbox
+local-env-test:
+	@echo "Running deterministic local environment tests..."
+	@chmod +x ./run-deterministic-tests.sh
+	@FLAGS=""
+	@if [ "$(VERBOSE)" = "1" ]; then FLAGS="$$FLAGS --verbose"; fi; \
+	 if [ "$(QUICK)" = "1" ]; then FLAGS="$$FLAGS --quick"; fi; \
+	 ./run-deterministic-tests.sh $$FLAGS
+
+# Stop local network Docker container and remove .env.local
+local-env-clean:
+	@echo "Tearing down local environment..."
+	@chmod +x ./setup-local-env.sh
+	@./setup-local-env.sh --clean
