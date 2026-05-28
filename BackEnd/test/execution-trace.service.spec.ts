@@ -1,7 +1,7 @@
-import { NotFoundException } from '@nestjs/common';
-import { ExecutionTraceService } from '../src/modules/trace/execution-trace.service';
-import { TraceIdUtil } from '../src/modules/trace/trace-id.util';
-import { TraceStatus } from '../src/modules/trace/trace.types';
+﻿import { NotFoundException } from '@nestjs/common';
+import { ExecutionTraceService } from '#src/modules/trace/execution-trace.service';
+import { TraceIdUtil } from '#src/modules/trace/trace-id.util';
+import { TraceStatus } from '#src/modules/trace/trace.types';
 
 const makeDto = (overrides?: Partial<Parameters<ExecutionTraceService['createTrace']>[0]>) => ({
   traceId: TraceIdUtil.generate('delivery-001'),
@@ -18,7 +18,7 @@ describe('ExecutionTraceService', () => {
     service = new ExecutionTraceService();
   });
 
-  // ── createTrace ──────────────────────────────────────────────────────────
+  // â”€â”€ createTrace â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   describe('createTrace', () => {
     it('should store a trace with PENDING status', async () => {
@@ -40,7 +40,7 @@ describe('ExecutionTraceService', () => {
     });
   });
 
-  // ── linkOnchain ──────────────────────────────────────────────────────────
+  // â”€â”€ linkOnchain â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   describe('linkOnchain', () => {
     it('should upgrade the trace ID with the real tx hash', async () => {
@@ -86,7 +86,7 @@ describe('ExecutionTraceService', () => {
     });
   });
 
-  // ── appendEvent ──────────────────────────────────────────────────────────
+  // â”€â”€ appendEvent â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   describe('appendEvent', () => {
     it('should append a new event and update currentStatus', async () => {
@@ -115,7 +115,7 @@ describe('ExecutionTraceService', () => {
     });
   });
 
-  // ── findByWebhookEventId ─────────────────────────────────────────────────
+  // â”€â”€ findByWebhookEventId â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   describe('findByWebhookEventId', () => {
     it('should find the trace by webhook delivery ID', async () => {
@@ -131,7 +131,7 @@ describe('ExecutionTraceService', () => {
     });
   });
 
-  // ── findByQuestId ────────────────────────────────────────────────────────
+  // â”€â”€ findByQuestId â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   describe('findByQuestId', () => {
     it('should return all traces for a given quest', async () => {

@@ -1,7 +1,7 @@
-import { ExecutionTraceService } from '../src/modules/trace/execution-trace.service';
-import { WebhookService } from '../../src/modules/webhooks/webhook.service';
-import { TraceIdUtil } from '../src/modules/trace/trace-id.util';
-import { TraceStatus } from '../src/modules/trace/trace.types';
+﻿import { ExecutionTraceService } from '#src/modules/trace/execution-trace.service';
+import { WebhookService } from '#src/modules/webhooks/webhook.service';
+import { TraceIdUtil } from '#src/modules/trace/trace-id.util';
+import { TraceStatus } from '#src/modules/trace/trace.types';
 
 describe('WebhookService (integration)', () => {
   let traceService: ExecutionTraceService;
@@ -43,7 +43,7 @@ describe('WebhookService (integration)', () => {
     expect(trace!.onchainTxHash).not.toBeNull();
   });
 
-  it('should produce a trace with at least two events (PENDING → SUBMITTED)', async () => {
+  it('should produce a trace with at least two events (PENDING â†’ SUBMITTED)', async () => {
     const result = await webhookService.handleWebhook({
       deliveryId: 'gh-delivery-003',
       event: 'push',

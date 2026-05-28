@@ -1,4 +1,4 @@
-import { TraceIdUtil } from '../src/modules/trace/trace-id.util';
+﻿import { TraceIdUtil } from '#src/modules/trace/trace-id.util';
 
 describe('TraceIdUtil', () => {
   describe('generate', () => {
