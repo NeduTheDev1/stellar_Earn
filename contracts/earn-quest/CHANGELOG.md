@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added CI validation for contract changelog updates and breaking-change metadata so contract interface changes cannot merge without matching release notes.
 - Initialized this changelog so future contract releases have a single source of truth.
 - Added `gas_budget.rs` module defining explicit instruction-count ceilings per entrypoint (`init`, `reg_qst`, `sub_prf`, `appr_sub`, `clm_rwd`) and a `within_budget` helper for regression checks.
+- Minimum creator level requirement and creator whitelist. Admin can set a level threshold (default 0 = disabled); quest creation fails if the creator's XP level is below it. Whitelisted addresses bypass the check.
 
 ---
 
