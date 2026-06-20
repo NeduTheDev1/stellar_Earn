@@ -344,7 +344,7 @@ fn test_claim_pending_submission_rejected() {
     client.submit_proof(&quest_id, &submitter, &proof);
 
     // Submission is Pending, not Approved → InvalidStatusTransition
-    let result = client.try_claim_reward(&quest_id, &submitter, &100i128);
+    let result = client.try_claim_reward(, &100i128);
     assert!(result.is_err(), "claiming a pending submission must be rejected");
 }
 
@@ -365,7 +365,7 @@ fn test_claim_rejected_submission_rejected() {
     // Since there is no explicit reject_submission entry point in lib.rs we
     // verify the claim guard by attempting to claim a non-approved submission.
     // The submission is still Pending, so this tests the same guard.
-    let result = client.try_claim_reward(&quest_id, &submitter, &100i128);
+    let result = client.try_claim_reward(, &100i128);
     assert!(result.is_err(), "claiming an unapproved submission must be rejected");
     let _ = admin; // silence unused warning
 }
@@ -381,7 +381,7 @@ fn test_claim_nonexistent_submission_rejected() {
     register_quest(&env, &client, &quest_id, &creator, &token, &verifier);
 
     // No submission was ever made by `stranger`
-    let result = client.try_claim_reward(&quest_id, &submitter, &100i128);
+    let result = client.try_claim_reward(, &100i128);
     assert!(result.is_err(), "claiming for a non-existent submission must be rejected");
 }
 
@@ -508,7 +508,8 @@ fn test_resolve_nonexistent_dispute_rejected() {
     let (env, client, _admin, _token) = setup();
     let initiator = Address::generate(&env);
     let arbitrator = Address::generate(&env);
-    let result = client.try_resolve_dispute(&quest_id, &initiator, &arbitrator, &false, &0u32);
+
+    let result = client.try_resolve_dispute(&symbol_short!("D2"), &initiator, &arbitrator);
     assert!(result.is_err(), "resolving a non-existent dispute must be rejected");
 }
 
@@ -523,7 +524,7 @@ fn test_resolve_dispute_by_wrong_arbitrator_rejected() {
     client.open_dispute(&quest_id, &initiator, &arbitrator);
 
     // Wrong arbitrator → DisputeNotAuthorized (#84)
-    let result = client.try_resolve_dispute(&quest_id, &initiator, &arbitrator, &false, &0u32);
+    let result = client.try_resolve_dispute(, false, 0u32);
     assert!(result.is_err(), "resolve by wrong arbitrator must be rejected");
 }
 
@@ -535,7 +536,7 @@ fn test_withdraw_resolved_dispute_rejected() {
     let quest_id = symbol_short!("D4");
 
     client.open_dispute(&quest_id, &initiator, &arbitrator);
-    client.resolve_dispute(client.resolve_dispute(, false, 0u32);quest_id, client.resolve_dispute(, false, 0u32);initiator, client.resolve_dispute(, false, 0u32);arbitrator, client.resolve_dispute(, false, 0u32);false, client.resolve_dispute(, false, 0u32);0u32);
+    client.resolve_dispute(, false, 0u32);
 
     // Already Resolved, cannot withdraw → DisputeNotPending (#83)
     let result = client.try_withdraw_dispute(&quest_id, &initiator);
