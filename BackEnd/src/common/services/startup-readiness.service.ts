@@ -127,7 +127,10 @@ export class StartupReadinessService implements OnModuleInit {
         component: 'Environment Variables (Keys)',
         status: 'ok',
         latency,
-        details: { requiredKeys: requiredKeys.length, optionalKeys: optionalKeys.length },
+        details: {
+          requiredKeys: requiredKeys.length,
+          optionalKeys: optionalKeys.length,
+        },
       };
     } catch (error) {
       const latency = Date.now() - startTime;
@@ -286,7 +289,8 @@ export class StartupReadinessService implements OnModuleInit {
   private getRedisClient(): any {
     try {
       const store =
-        (this.cacheManager as any).stores?.[0] ?? (this.cacheManager as any).store;
+        (this.cacheManager as any).stores?.[0] ??
+        (this.cacheManager as any).store;
       const client = store?.getClient
         ? store.getClient()
         : store?.client
@@ -296,9 +300,9 @@ export class StartupReadinessService implements OnModuleInit {
       if (client && typeof client.ping === 'function') {
         return client;
       }
-    } catch (e) {
-      // Ignore errors
-    }
+    } catch (_e) {
+  // Ignore errors
+}
 
     return null;
   }
@@ -309,7 +313,9 @@ export class StartupReadinessService implements OnModuleInit {
     });
   }
 
-  private calculateOverallStatus(checks: ReadinessCheckResult[]): 'ready' | 'degraded' | 'not_ready' {
+  private calculateOverallStatus(
+    checks: ReadinessCheckResult[],
+  ): 'ready' | 'degraded' | 'not_ready' {
     const hasDown = checks.some((c) => c.status === 'down');
     const hasDegraded = checks.some((c) => c.status === 'degraded');
 
@@ -325,7 +331,12 @@ export class StartupReadinessService implements OnModuleInit {
   }
 
   private logReadinessReport(report: StartupReadinessReport): void {
-    const statusEmoji = report.overallStatus === 'ready' ? '✅' : report.overallStatus === 'degraded' ? '⚠️' : '❌';
+    const statusEmoji =
+      report.overallStatus === 'ready'
+        ? '✅'
+        : report.overallStatus === 'degraded'
+          ? '⚠️'
+          : '❌';
 
     this.logger.log(
       `${statusEmoji} Startup Readiness Check Complete`,
@@ -338,7 +349,12 @@ export class StartupReadinessService implements OnModuleInit {
     );
 
     for (const check of report.checks) {
-      const emoji = check.status === 'ok' ? '✅' : check.status === 'degraded' ? '⚠️' : '❌';
+      const emoji =
+        check.status === 'ok'
+          ? '✅'
+          : check.status === 'degraded'
+            ? '⚠️'
+            : '❌';
       const latency = check.latency ? `${check.latency}ms` : 'N/A';
       const error = check.error ? ` - ${check.error}` : '';
 
