@@ -9,6 +9,7 @@ import { AppLoggerService } from './common/logger/logger.service';
 import { SecurityMiddleware } from './common/middleware/security.middleware';
 import { dataSourceOptions } from './database/data-source';
 import { LoggerModule } from './common/logger/logger.module';
+import { StartupReadinessService } from './common/services/startup-readiness.service';
 
 import { AdminModule } from './modules/admin/admin.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
@@ -72,6 +73,7 @@ import { EventsModule } from './events/events.module';
     AppService,
     AppLoggerService,
     SecurityMiddleware,
+    StartupReadinessService,
     {
       provide: APP_INTERCEPTOR,
       useClass: TraceInterceptor,
